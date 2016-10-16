@@ -150,10 +150,6 @@ bool LeapmotionPointer::Pinching() const
 			{
 				pinching = true;
 			}
-			else
-			{
-				pinching = false;
-			}
 		}
 	}
 	return pinching;

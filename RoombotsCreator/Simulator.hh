@@ -30,7 +30,7 @@ class Simulator {
 	unsigned int     d_width = 0;                ///<The window's width
 	unsigned int     d_height = 0;               ///<The window's height
 	glm::mat4        d_worldMatrix = glm::mat4();///<The worldMatrix that changes depending on the current mode
-	bool             d_mode = true;	             ///<viewing mode. false for "in-room" view, true for "box" view
+	bool             d_mode = false;	         ///<viewing mode. false for "in-room" view, true for "box" view
 	bool             d_running = true;           ///<Whether or not the Simulator is running
 	int              d_windowID;                 ///<The OpenGL context window's ID
 

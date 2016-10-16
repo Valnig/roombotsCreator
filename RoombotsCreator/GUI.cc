@@ -123,11 +123,14 @@ void GUI::CleanUp()
 
 void GUI::CheckForPinchedRoomBot()
 {
+	
+
 	//we look for the first MovableRoomBot in pinching range from the LeapmotionPointer while it is pinching
 	for (size_t i(0); i < this->d_nRoomBots; i++)
 	{
 		if (d_roombots[i]->CloseEnough(d_pointer.Position()) && d_pointer.Pinching())
 		{
+			std::cout << "pinched roombot " <<d_roombots[i]<< std::endl;
 			d_pointer.AssignRoomBot((d_roombots[i]));
 		}
 	}
@@ -140,9 +143,9 @@ void GUI::UpdatePointer(bool mode)
 
 void GUI::Update(bool mode)
 {
-
 	UpdatePointer(mode);
 	CheckForPinchedRoomBot();
+
 }
 
 void GUI::UpdateWorldMatrix(const glm::mat4& worldMatrix)
