@@ -5,75 +5,109 @@ Fall 2015
 */
 #include "RoomBot.hh"
 
-RoomBot::RoomBot(glm::vec3 position, OBJModel* p_h1, OBJModel* p_h2, OBJModel* p_circle) :
-firstACMposition(position), firstACMnormal(glm::vec3(0.0, -1.0, 0.0)), left1Normal(glm::vec3(-1.0, 0.0, 0.0)), d_p_hemisphere1(p_h1), d_p_hemisphere2(p_h2), d_p_circle(p_circle) 
-{
-	std::cout << "created roombot. first ACM is at " << firstACMposition.x << "," << firstACMposition.x << "," << firstACMposition.x << std::endl;
-	for (unsigned int face(FIRST_FACE); face < LAST_FACE; face++){
-		std::cout << "face  " << (FACES_ENUM)face << " at " << facePosition((FACES_ENUM)face).x << "," << facePosition((FACES_ENUM)face).y << "," << facePosition((FACES_ENUM)face).z << std::endl;
-		std::cout << "with normal  " << faceNormal((FACES_ENUM)face).x << "," << faceNormal((FACES_ENUM)face).y << "," << faceNormal((FACES_ENUM)face).z << std::endl;
-
-	}
-
+void printVec3(glm::vec3 vec){
+	std::cout << "(" << vec.x << "," << vec.y << "," << vec.z << ")" << std::endl;
 }
 
+float norm(glm::vec3 vec){
+	return sqrt(vec.x * vec.x + vec.y *vec.y + vec.z*vec.z);
+}
 
-void RoomBot::Draw(const glm::mat4& VP) const
+void RTFtest(){
+	for (int i(0); i < 10; i++){
+		for (int j(0); j < 10; j++){
+			for (int k(0); k < 10; k++){
+				glm::vec3 from = (1.f / 10.f)*glm::vec3(i - 10.f, j - 10.f, k - 10.f);
+				glm::vec3 to = (1.f / 10.f)*glm::vec3(k - 10.f, i - 10.f, j - 10.f);
+				glm::vec3 x = glm::cross(from, to);
+				float theta = glm::dot(from, to);
+				glm::vec3 to2 = glm::vec3(rotationToFit(from, to, glm::vec3(from.y, -from.x, 0))*glm::vec4(from, 1.0));
+				glm::vec3 diff = glm::vec3(glm::rotate(std::acos(glm::dot(from, to)), glm::cross(from, to))*glm::vec4(from, 1.0)) - to;
+				printVec3(from);
+				printVec3(to);
+				printVec3(x);
+				printVec3(to2);
+				std::cout << "theta = " << theta << std::endl;
+				std::cout << "diff = "; printVec3(diff);
+				std::cout << "norm : " << norm(diff) << std::endl << std::endl;;
+			}
+		}
+	}
+}
+
+RoomBot::RoomBot(glm::vec3 position, OBJModel* p_h1, OBJModel* p_h2, OBJModel* p_circle) :
+//firstACMposition(position), firstACMnormal(normalize(glm::vec3(1.0, -1.0, 0.0))), left1Normal(normalize(glm::vec3(0.0, 0.0, -1.0))), d_p_hemisphere1(p_h1), d_p_hemisphere2(p_h2), d_p_circle(p_circle) 
+firstACMposition(position), firstACMnormal(glm::vec3(0.0, -1.0, 0.0)), left1Normal(glm::vec3(-1.0, 0.0, 0.0)), d_p_hemisphere1(p_h1), d_p_hemisphere2(p_h2), d_p_circle(p_circle)
+
 {
-	//glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), d_firstPosition + glm::vec3(MODULE_SIZE / 2));
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), firstACMposition);
 
-	glm::mat4 VPWithTranslate = VP * translationMatrix;
+	std::cout << "created roombot. first ACM is at " << firstACMposition.x << "," << firstACMposition.y << "," << firstACMposition.z << std::endl;
+	std::cout << "halmodules are at "; printVec3(halfmodulePosition(HM1)); 
+	std::cout << "and at : "; printVec3(halfmodulePosition(HM2));
+
+	for (unsigned int i(AXIS1); i <= AXIS3; i++){
+		std::cout << "axis " << i << " : "; printVec3(Axis((AXIS_ENUM)i));
+	}
+	for (unsigned int face(FIRST_FACE); face <= LAST_FACE; face++){
+		std::cout << "face  "<<face<<" : "; printVec3(facePosition((FACES_ENUM)face));
+		std::cout << "with normal  ";  printVec3(faceNormal((FACES_ENUM)face));
+		std::cout << "normal after rotation : "; printVec3(glm::vec3(rotationToFit(glm::vec3(0.0, 0.0, -1.0), faceNormal((FACES_ENUM)face), glm::vec3(0.0, 1.0, 0.0))*glm::vec4(0.0, 0.0, -1.0,1.0)));
+
+	}
+	//RTFtest();
+
+	firstACMrotation = glm::rotate(M_PI / 2, glm::vec3(0, 1, 0))*glm::rotate(M_PI / 2, glm::vec3(0, 0, -1));
+
+	firstACMnormal = glm::vec3(firstACMrotation*glm::vec4(baseFirstACMnormal(), 1.0));
+	left1Normal = glm::vec3(firstACMrotation*glm::vec4(baseLeft1Normal(), 1.0));
+}
+
+int drawcount = 0;
+
+void RoomBot::Draw(const glm::mat4& VP) //const
+{
+	drawcount++;
+	firstACMrotation = glm::rotate(drawcount*(M_PI / 100) , glm::vec3(0, 1, 0))*glm::rotate(drawcount*(M_PI / 200), glm::vec3(0, 0, -1));
+
+	/*drawcount = (drawcount + 1) % 71;
+
+	switch(drawcount) {
+	case 20: axisAngle1 += (M_PI / 10); break;
+	case 40: axisAngle2 -= (M_PI / 10); break;
+	case 60: axisAngle3 += (M_PI / 10); break;
+	
+	}*/
 
 
-	d_p_hemisphere1->Draw(VPWithTranslate);
-	d_p_hemisphere2->Draw(VPWithTranslate);
+	glm::mat4 VPWithACMtransformation = VP*firstACMtransformation();
+
+	d_p_hemisphere1->Draw(VPWithACMtransformation * glm::translate(centerTranslation()));
+	d_p_hemisphere2->Draw(VPWithACMtransformation * AxisTransform(AXIS1));
+	d_p_hemisphere1->Draw(VPWithACMtransformation * AxisTransform(AXIS1) * glm::translate(centerTranslation()) * AxisTransform(AXIS2));
+	d_p_hemisphere2->Draw(VPWithACMtransformation * AxisTransform(AXIS1) * AxisTransform(AXIS2) * AxisTransform(AXIS3));
 
 
-	glm::mat4 scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(MODULE_SIZE*0.65f));
+	glm::mat4 scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(MODULE_SIZE*0.63f));
 
 	//TODO : DRAW PROPERLY
-	for (unsigned int face(FIRST_FACE); face < 2; face++){
-		d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), facePosition((FACES_ENUM)face))
-		*glm::rotate(M_PI, glm::normalize(faceNormal((FACES_ENUM)face) + glm::vec3(0.0, 1.0, 0.0)))
-		*scale_matrix);
+	for (unsigned int face(FIRST_FACE); face <= LAST_FACE; face++){
+		glm::mat4 rotation_matrix = rotationToFit(glm::vec3(0.0, 0.0, -1.0), faceNormal((FACES_ENUM)face), glm::vec3(0.0, 1.0, 0.0));
+		//std::cout << norm(glm::vec3(rotationToFit(glm::vec3(0.0, 0.0, -1.0), faceNormal((FACES_ENUM)face), glm::vec3(0.0, 1.0, 0.0))*glm::vec4(glm::vec3(0.0, 0.0, -1.0), 1.0)) - faceNormal((FACES_ENUM)face)) <<  std::endl;;
+		d_p_circle->Draw(VP 
+			* glm::translate(facePosition((FACES_ENUM(face))))
+			* rotation_matrix
+			* scale_matrix);
 	}
-
-	//Here, the same circle is drawn 6 times in different positions and orientations in order to draw all 6 faces
-	/*d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x, d_firstPosition.y - MODULE_SIZE / 2, d_firstPosition.z - 0.005f))
-		*glm::rotate(1.57f, glm::vec3(1.0f, 0.0f, 0.0f))
-		*scale_matrix);
-
-	d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x, d_firstPosition.y + MODULE_SIZE / 2, d_firstPosition.z - 0.005f))
-		*glm::rotate(1.57f, glm::vec3(1.0f, 0.0f, 0.0f))
-		*scale_matrix);
-
-	d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x, d_firstPosition.y + 0.001f, d_firstPosition.z + MODULE_SIZE / 2))
-		*scale_matrix);
-
-	d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x, d_firstPosition.y + 0.001f, d_firstPosition.z - MODULE_SIZE / 2))
-		*scale_matrix);
-
-	d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x - MODULE_SIZE / 2, d_firstPosition.y, d_firstPosition.z + 0.001f))
-		*glm::rotate(1.57f, glm::vec3(0.0f, 1.0f, 0.0f))
-		*scale_matrix);
-
-	d_p_circle->Draw(VP*glm::translate(glm::mat4(1.0f), glm::vec3(d_firstPosition.x + MODULE_SIZE / 2, d_firstPosition.y, d_firstPosition.z + 0.001f))
-		*glm::rotate(1.57f, glm::vec3(0.0f, 1.0f, 0.0f))
-		*scale_matrix);
-		*/
 }
 
 
 void RoomBot::Drag(glm::vec3 target){
 	firstACMposition = target;
-
 }
 
 
 
 bool RoomBot::CloseEnough(glm::vec3 position, float distance){
-	//std::cout << "(" << position.x << "," << position.y << "," << position.z << ")  (" << d_firstPosition.x << "," << d_firstPosition.y << "," << d_firstPosition.z << ")  = " << glm::distance(position, d_firstPosition) << std::endl;
 	return glm::distance(position, halfmodulePosition(HM1)) < distance;
 }
 
@@ -107,6 +141,44 @@ void RoomBot::LockFirstACM(glm::vec3 position, glm::vec3 normal){
 10 : front2
 */
 
+
+
+//OK
+glm::vec3 RoomBot::centerTranslation() const{
+	return glm::vec3(0.0, MODULE_SIZE / 2, 0.0);
+}
+
+//OK
+//the position of the center of the halfmodules
+glm::vec3 RoomBot::halfmodulePosition(HALF_MODULE_ENUM hm) const{
+	switch (hm){
+	case HM1: return glm::vec3(firstACMtransformation() * glm::vec4(centerTranslation(),1.0)); break;
+	case HM2: return glm::vec3(firstACMtransformation() * AxisTransform(AXIS1) * glm::vec4(2.0f*centerTranslation(), 1.0)); break;
+		//case HM2: return halfmodulePosition(HM1) + axis(AXIS2)*(MODULE_SIZE); break;
+	default: throw std::invalid_argument("There is no halfmodule " + hm); break;
+	}
+}
+
+glm::vec3 RoomBot::baseFaceNormal(FACES_ENUM face) const{
+	switch (face){
+	case ACM1: return baseFirstACMnormal(); break;
+	case LEFT1: return baseLeft1Normal(); break;
+	case BACK1: return glm::cross(baseFirstACMnormal(), baseLeft1Normal()); break;
+
+	case RIGHT1: return -baseLeft1Normal(); break;
+	case FRONT1: return -baseFaceNormal(BACK1); break;
+
+	case LEFT2: return baseLeft1Normal(); break;
+	case BACK2: return baseFaceNormal(BACK1); break;
+
+	case RIGHT2: return -baseLeft1Normal(); break;
+	case FRONT2: return -baseFaceNormal(BACK1); break;
+	case ACM2: return -baseFirstACMnormal(); break;
+
+	default: throw std::invalid_argument("there is no face " + face);
+	}
+}
+
 //this should work for all angle but must be verified
 //all normals except the member ones or computed based on the difference between the face position and the corresponding halfmodule's center
 glm::vec3 RoomBot::faceNormal(FACES_ENUM face) const{
@@ -114,24 +186,17 @@ glm::vec3 RoomBot::faceNormal(FACES_ENUM face) const{
 	if (face >= 1 && face <= 10){
 		if (face == ACM1)return firstACMnormal;
 		else if (face == LEFT1) return left1Normal;
+		else if (face == BACK1) return glm::normalize(glm::cross(firstACMnormal, left1Normal));
 		else {
 			if (face <= 5) return normalize(facePosition(face) - halfmodulePosition(HM1));
 			else return normalize(facePosition(face) - halfmodulePosition(HM2));;
 		}
-	}else{
+	}
+	else{
 		throw std::invalid_argument("there is no face " + face);
 	}
 }
 
-//the position of the center of the halfmodules
-glm::vec3 RoomBot::halfmodulePosition(HALF_MODULE_ENUM hm) const{
-	switch (hm){
-	case HM1: return firstACMposition - firstACMnormal*(MODULE_SIZE/2); break;
-	case HM2: return glm::vec3(glm::rotate(axisAngle1, axis(AXIS1))*glm::vec4(0.0, MODULE_SIZE*1.5f, 0.0, 1.0)); break;
-	//case HM2: return halfmodulePosition(HM1) + axis(AXIS2)*(MODULE_SIZE); break;
-	default: throw std::invalid_argument("There is no halfmodule " + hm); break;
-	}
-}
 
 glm::vec3 RoomBot::ACMposition(HALF_MODULE_ENUM hm) const{
 	switch (hm){
@@ -151,47 +216,124 @@ glm::vec3 RoomBot::ACMnormal(HALF_MODULE_ENUM hm) const{
 
 
 //this should work for all angle but must be verified
-glm::vec3 RoomBot::axis(AXIS_ENUM axis) const{
+glm::vec3 RoomBot::Axis(AXIS_ENUM axis) const{
 	switch (axis){
-	case 1: return - glm::normalize((faceNormal(ACM1) + faceNormal(BACK1) + faceNormal(LEFT1))*(MODULE_SIZE / 2)); break;
-	case 2: return glm::normalize(halfmodulePosition(HM2) - halfmodulePosition(HM1)); break;
-	case 3: return - glm::normalize((faceNormal(ACM2) + faceNormal(BACK2) + faceNormal(LEFT2))*(MODULE_SIZE / 2)); break;
+	case AXIS1: return glm::vec3(MODULE_SIZE / 2); break;
+	case AXIS2: return firstACMnormal; break;
+	case AXIS3: return Axis(AXIS1); break;
 	default: throw std::invalid_argument("There is no axis " + axis); break;
 	}
 }
 
 
+
+
 //this should work for all angle but must be verified
 glm::vec3 RoomBot::secondACMnormal() const{
-	return normalize(secondACMposition()-halfmodulePosition(HM2));
+	return faceNormal(ACM2);
 }
+
+glm::vec3 RoomBot::baseFirstACMnormal() const{
+	return glm::vec3(0, -1, 0);
+}
+
+glm::vec3 RoomBot::baseLeft1Normal() const{
+	return glm::vec3(-1, 0, 0);
+}
+
+
+glm::vec3 RoomBot::baseFacePosition(FACES_ENUM face) const{
+	switch (face){
+	case ACM1: return glm::vec3(0.0f); break;
+	case LEFT1: return (baseLeft1Normal()-baseFirstACMnormal())*(MODULE_SIZE / 2); break;
+	case BACK1: return (glm::cross(baseFirstACMnormal(), baseLeft1Normal())-baseFirstACMnormal())*(MODULE_SIZE / 2); break;
+
+	case RIGHT1: return -baseLeft1Normal()*(MODULE_SIZE/2); break;
+	case FRONT1: return -glm::cross(baseFirstACMnormal(), baseLeft1Normal())*(MODULE_SIZE / 2); break;
+
+	case LEFT2: return baseFacePosition(LEFT1); break;
+	case BACK2: return baseFacePosition(BACK1); break;
+
+	case RIGHT2: return baseFacePosition(RIGHT1); break; 
+	case FRONT2: return baseFacePosition(FRONT1); break;    
+	case ACM2: return centerTranslation(); break;
+
+	default: throw std::invalid_argument("there is no face " + face);
+	}
+}
+
 
 //TODO -> compute
 //only works with all angles at 0 for now
 glm::vec3 RoomBot::secondACMposition() const{
 	//for now it's based on ACM1's normal
-	return halfmodulePosition(HM2) - firstACMnormal*(MODULE_SIZE / 2);
-
+	return facePosition(ACM2);
 }
 
-//TODO : compute all faces positions
-//only works with all angles at 0 for now
+glm::vec3 RoomBot::middlePosition() const{
+	return 0.5f * (halfmodulePosition(HM1) - halfmodulePosition(HM2)) ;
+}
+
+
 glm::vec3 RoomBot::facePosition(FACES_ENUM face) const{
-	switch (face){
-	case ACM1: return firstACMposition; break;
-	case LEFT1: return halfmodulePosition(HM1) + left1Normal*(MODULE_SIZE / 2); break;
-	case BACK1: return halfmodulePosition(HM1) + glm::cross(firstACMnormal,left1Normal)*(MODULE_SIZE / 2); break;
+	return glm::vec3(firstACMtransformation() * AxisTransform(face) * glm::vec4(baseFacePosition(face), 1.0));
+}
 
-	case RIGHT1: return halfmodulePosition(HM1) - left1Normal*(MODULE_SIZE / 2); break;                                //TODO
-	case FRONT1: return halfmodulePosition(HM1) - glm::cross(firstACMnormal, left1Normal)*(MODULE_SIZE / 2); break;    //TODO
 
-	case ACM2: return secondACMposition(); break;
-	case LEFT2: return halfmodulePosition(HM2) + left1Normal*(MODULE_SIZE / 2); break;
-	case BACK2: return halfmodulePosition(HM1) + glm::cross(firstACMnormal, left1Normal)*(MODULE_SIZE / 2); break;
-
-	case RIGHT2: return halfmodulePosition(HM2) - left1Normal*(MODULE_SIZE / 2); break;                                //TODO
-	case FRONT2: return halfmodulePosition(HM1) - glm::cross(firstACMnormal, left1Normal)*(MODULE_SIZE / 2); break;    //TODO
-
-	default: throw std::invalid_argument("there is no face " + face);
+glm::mat4 RoomBot::AxisTransform(AXIS_ENUM axis) const{
+	switch (axis){
+	case AXIS1: return glm::translate(centerTranslation())*glm::rotate(axisAngle1, Axis(AXIS1));
+	case AXIS2: return glm::translate(centerTranslation())*glm::rotate(axisAngle2, Axis(AXIS2));
+	case AXIS3: return glm::translate(centerTranslation())*glm::rotate(axisAngle3, Axis(AXIS3));
 	}
 }
+
+glm::mat4 RoomBot::AxisTransform(FACES_ENUM face) const{
+	switch (face){
+	case ACM1: return glm::mat4(1.0f); break;
+	case LEFT1: return glm::mat4(1.0f); break;
+	case BACK1: return glm::mat4(1.0f); break;
+
+	case RIGHT1: return AxisTransform(AXIS1); break;
+	case FRONT1: return AxisTransform(AXIS1); break;
+
+	case LEFT2: return AxisTransform(AXIS1)*AxisTransform(AXIS2); break;
+	case BACK2: return AxisTransform(AXIS1)*AxisTransform(AXIS2); break;
+
+	case RIGHT2: return AxisTransform(AXIS1)*AxisTransform(AXIS2)*AxisTransform(AXIS3); break;
+	case FRONT2: return AxisTransform(AXIS1)*AxisTransform(AXIS2)*AxisTransform(AXIS3); break;
+	case ACM2: return  AxisTransform(AXIS1)*AxisTransform(AXIS2)*AxisTransform(AXIS3); break;
+	}
+}
+
+
+glm::mat4 RoomBot::firstACMtransformation() const{
+	//le problème vient d'ici
+	//return glm::translate(firstACMposition)*rotationToFit(firstACMnormal, baseFirstACMnormal(), baseLeft1Normal())*rotationToFit(left1Normal, baseLeft1Normal(), baseFirstACMnormal());
+	return glm::translate(firstACMposition)*firstACMrotation;
+}
+
+//(0,0,-1), (0,-1,0), (-1,0,0) 
+glm::mat4 rotationToFit(glm::vec3 from, glm::vec3 to, glm::vec3 axis){
+	normalize(from);
+	normalize(to);
+	normalize(axis);
+	if (norm(glm::cross(from, to)) == 0){
+		if (glm::dot(from, to) / ((norm(from)*norm(to))) == 1) return glm::mat4(1.0f);
+		else return glm::rotate(M_PI, axis);
+	}
+	else{
+		glm::vec3 v = glm::cross(from, to);
+		glm::mat4 V(0.0f);
+		V[0][1] = -v.z;
+		V[0][2] = v.y;
+		V[1][0] = v.z;
+		V[1][2] = -v.x;
+		V[2][0] = -v.y;
+		V[2][1] = v.x;
+
+		//return glm::mat4(1.0f) + V + V*V*((1 - glm::dot(from, to)) / (norm(v)*norm(v)));
+		return glm::rotate(std::acos(glm::dot(from, to)), glm::normalize(glm::cross(from, to)));
+	}
+}
+

@@ -35,7 +35,6 @@
 
 
 ///All the following macros are in meters
-
 #define M_PI       3.14159265358979323846f
 
 #define MODULE_SIZE 0.12f ///<The size of a a half of a Roombots module
@@ -44,10 +43,10 @@
 #define BUTTON_SIZE 0.5f ///<The size of a button
 #define BUTTON_SEPARATION 1.0f ///<The horizontal distance between two buttons
 #define BUTTON_UP_START -0.3f ///<The vertical point where the buttons are positioned 
-#define BUTTON_DEPTH_OFFSET -2.0f ///<The depth point where the buttons are positioned
-#define BUTTON_RIGHT_START 2.6f ///<The horizontal point from where the buttons are drawn
+#define BUTTON_DEPTH_OFFSET -1.0f ///<The depth point where the buttons are positioned
+#define BUTTON_RIGHT_START 1.3f ///<The horizontal point from where the buttons are drawn
 #define LEAP_POINTER_SIZE 0.5f ///<The size of the LeapmotionPointer
-#define TABLE_HEIGHT -0.7f ///<The height of the table on which the Roombots are dropped
+#define TABLE_HEIGHT -0.1f ///<The height of the table on which the Roombots are dropped
 #define COORDINATE_SYSTEM_SCALE_CONVERSION 0.005f ///<A conversion factor to scale the data 
                                                   ///<coming from the Leapmotion device
                                                   ///<to fit the Room-View mode characteristics

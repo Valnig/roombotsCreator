@@ -85,13 +85,13 @@ void const GUI::Render(const glm::mat4& VP)
 	}
 	
 
-		d_p_button->Draw(VP);
+	//d_p_button->Draw(VP);
 
 	//the TrashCan
 	d_trashCan->Draw(VP);
 	
 	//and finally the LeapmotionPointer
-	d_pointer.Draw(VP);
+	//d_pointer.Draw(VP);
 }
 
 

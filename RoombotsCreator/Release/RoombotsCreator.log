@@ -1,13 +1,19 @@
-﻿La génération a démarré 16.10.2016 21:18:26.
+﻿La génération a démarré 19.10.2016 18:17:04.
      1>Projet "C:\Users\Val\Desktop\roombotsCreator\RoombotsCreator\RoombotsCreator.vcxproj" sur le nœud 2 (Build cible(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(355,5): warning MSB8003: Could not find WindowsSDKDir variable from the registry.  TargetFrameworkVersion or PlatformToolset may be set to an invalid version number.
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(381,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (RoombotsSimulator.vcxproj).  This can lead to incorrect clean and rebuild behavior.
      1>ClCompile:
-         E:\Program Files (x86)\VisualStudioUltimate2013\VC\bin\CL.exe /c /IC:\Users\Val\Desktop\roombotsCreator\packages\glm.0.9.6.3\build\native\../..//build/native/include/ /ILeapSDK\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _USING_V110_SDK71_ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt RoomBot.cc
+         E:\Program Files (x86)\VisualStudioUltimate2013\VC\bin\CL.exe /c /IC:\Users\Val\Desktop\roombotsCreator\packages\glm.0.9.6.3\build\native\../..//build/native/include/ /ILeapSDK\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _USING_V110_SDK71_ /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Button.cc GUI.cc LeapmotionPointer.cc main.cc RoomBot.cc Simulator.cc
+         Button.cc
+         GUI.cc
+     1>GUI.cc(54): warning C4316: 'RoomBot' : l'objet alloué sur le tas n'est peut-être pas aligné 16
+         LeapmotionPointer.cc
+         main.cc
          RoomBot.cc
+         Simulator.cc
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1190,5): warning MSB8030: The linker switch "Minimum Required Version" requires "SubSystem" to be set.  Without "SubSystem", the "Minimum Required Version" would not be passed to linker and could prevent to the output binary from running on older Operating Systems.
        Link:
-         E:\Program Files (x86)\VisualStudioUltimate2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.exe" /NOLOGO /LIBPATH:Libraries\freeglut /LIBPATH:Libraries\glew /LIBPATH:Libraries\soil /LIBPATH:Libraries\OVR /LIBPATH:Libraries\Leap Leap.lib LibOVR.lib opengl32.lib SOIL.lib freeglut.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.lib" /MACHINE:X86 /SAFESEH Release\Button.obj
+         E:\Program Files (x86)\VisualStudioUltimate2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.exe" /NOLOGO /LIBPATH:Libraries\freeglut /LIBPATH:Libraries\glew /LIBPATH:Libraries\soil /LIBPATH:Libraries\OVR /LIBPATH:Libraries\Leap /LIBPATH:Libraries\Eigen Leap.lib LibOVR.lib opengl32.lib SOIL.lib freeglut.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Val\Desktop\roombotsCreator\Release\RoombotsCreator.lib" /MACHINE:X86 /SAFESEH Release\Button.obj
          Release\Cube.obj
          Release\GUI.obj
          Release\HalfModule.obj
@@ -26,6 +32,8 @@
      1>SOIL.lib(SOIL.obj) : warning LNK4075: ' /EDITANDCONTINUE' ignoré à cause de la spécification '/OPT:ICF'
      1>LINK : warning LNK4098: conflit entre la bibliothèque par défaut 'MSVCRTD' et les autres bibliothèques ; utilisez /NODEFAULTLIB:library
          Génération de code en cours
+     1>c:\users\val\desktop\roombotscreator\roombotscreator\roombot.cc(289): warning C4715: 'RoomBot::AxisTransform' : les chemins de contrôle ne retournent pas tous une valeur
+     1>c:\users\val\desktop\roombotscreator\roombotscreator\roombot.cc(307): warning C4715: 'RoomBot::AxisTransform' : les chemins de contrôle ne retournent pas tous une valeur
          Fin de la génération du code
      1>SOIL.lib(image_DXT.obj) : warning LNK4099: PDB 'vc120.pdb' n'a pu être trouvé avec 'SOIL.lib(image_DXT.obj)' ou sur 'C:\Users\Val\Desktop\roombotsCreator\Release\vc120.pdb' ; l'objet sera lié sans informations de débogage
      1>SOIL.lib(image_helper.obj) : warning LNK4099: PDB 'vc120.pdb' n'a pu être trouvé avec 'SOIL.lib(image_helper.obj)' ou sur 'C:\Users\Val\Desktop\roombotsCreator\Release\vc120.pdb' ; l'objet sera lié sans informations de débogage
@@ -36,4 +44,4 @@
 
 La génération a réussi.
 
-Temps écoulé 00:00:01.78
+Temps écoulé 00:00:04.31
